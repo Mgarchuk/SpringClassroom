@@ -1,6 +1,8 @@
 package com.example.classroom.codecs;
 
 import com.example.classroom.models.User;
+import com.example.classroom.models.UserAction;
+import com.example.classroom.models.UserMessage;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +17,7 @@ public class CustomJsonJacksonCodec extends JsonJacksonCodec {
     protected void init(ObjectMapper objectMapper) {
         super.init(objectMapper);
         objectMapper.addMixIn(User.class, UserMixIn.class);
+        objectMapper.addMixIn(UserMessage.class, UserMessageMixIn.class);
     }
 
     @Override

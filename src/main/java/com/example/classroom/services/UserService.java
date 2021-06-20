@@ -1,6 +1,7 @@
 package com.example.classroom.services;
 
 import com.example.classroom.models.User;
+import com.example.classroom.models.UserMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +19,29 @@ public class UserService {
         return (User)serviceHelper.redisson.getMap(usersKey).get(id);
     }
 
-    public List<User> getUsersByRoomId(UUID roomId) {
-        return null;
+    public UserMessage processUserMessage(UserMessage userMessage) {
+        switch (userMessage.getUserAction()) {
+            case LOGIN:
+                addUser(new User(userMessage.getUserId(), userMessage.getUsername()));
+                break;
+            case LOGOUT:
+                removeUser(new User(userMessage.getUserId(), userMessage.getUsername()));
+                break;
+            default:
+                break;
+        }
+
+        return userMessage.clone();
     }
 
-    public void addUser(User user) {
+    private void addUser(User user) {
+
         serviceHelper.redisson.getMap(usersKey).put(user.getUserId(), user);
+    }
+
+    private void removeUser(User user) {
+
+        serviceHelper.redisson.getMap(usersKey).remove(user.getUserId());
     }
 
     @Autowired

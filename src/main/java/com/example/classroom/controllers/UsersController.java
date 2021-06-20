@@ -1,38 +1,31 @@
 package com.example.classroom.controllers;
 
-import com.example.classroom.models.User;
+import com.example.classroom.models.UserMessage;
 import com.example.classroom.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UsersController {
 
     private UserService userService;
 
-    @GetMapping("users/{id}")
-    public User getUserById(@PathVariable UUID id) {
-        return userService.getUserById(id);
-    }
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
-    @GetMapping("room/users/{roomId}")
-    public List<User> getUsersByRoomId(@PathVariable UUID roomId) {
-        return userService.getUsersByRoomId(roomId);
-    }
+    @MessageMapping("/room")
+    public void processMessage(@Payload UserMessage userMessage) {
 
-    @PutMapping("users/add")
-    public void addUser(@RequestBody User user) {
-        userService.addUser(user);
+        UserMessage saved = userService.processUserMessage(userMessage);
+        messagingTemplate.convertAndSend("queue/actions", saved);
     }
 
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
-
-
 
 }
