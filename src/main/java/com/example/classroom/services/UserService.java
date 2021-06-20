@@ -15,10 +15,6 @@ public class UserService {
     private ServiceHelper serviceHelper;
     private final String usersKey = "users";
 
-    public User getUserById(UUID id) {
-        return (User)serviceHelper.redisson.getMap(usersKey).get(id);
-    }
-
     public UserMessage processUserMessage(UserMessage userMessage) {
         switch (userMessage.getUserAction()) {
             case LOGIN:
@@ -31,7 +27,6 @@ public class UserService {
                 break;
         }
 
-        
         return userMessage.clone();
     }
 
