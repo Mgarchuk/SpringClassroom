@@ -14,16 +14,10 @@ public class User {
         this.username = username;
     }
 
-    public User() {
-
-    }
-
-    @JsonProperty("user_id")
     public UUID getUserId() {
         return userId;
     }
 
-    @JsonProperty("username")
     public String getUsername() {
         return username;
     }

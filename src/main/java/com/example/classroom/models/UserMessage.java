@@ -17,10 +17,6 @@ public class UserMessage {
         this.userAction = action;
     }
 
-    public UserMessage() {
-
-    }
-
     public UserMessage clone() {
         return new UserMessage(id, userId, username, userAction);
     }
