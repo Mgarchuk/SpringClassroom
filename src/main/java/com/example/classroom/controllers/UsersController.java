@@ -33,6 +33,8 @@ public class UsersController {
         if (added) {
             UserMessage saved = userService.createMessage(user);
             messagingTemplate.convertAndSend("queue/actions", saved);
+        } else {
+            throw new RuntimeException();
         }
     }
 
