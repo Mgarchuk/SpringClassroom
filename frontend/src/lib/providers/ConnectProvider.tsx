@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { io, Socket } from 'socket.io-client'
+import StompClient from "react-stomp-client";
 
 import { config } from '../../config'
 import { IUser } from '../../types'
@@ -20,36 +20,23 @@ export const useConnect = (): IConnectProviderContext => {
   return context
 }
 
+const SOCKET_URL = 'ws://localhost:8080/broadcast'
+
 export const ConnectProvider: React.FC = ({ children }) => {
   const [ownState, updateOwnState] = useState<IUser | null>(null)
-  const socketRef = useRef<Socket | null>(null)
+
   const [users, setUsers] = useState<IUser[]>([])
 
-  useEffect(() => {
-    if (!ownState) return
-    socketRef.current = io(config.serverURL, {
-      query: {
-        nickname: ownState.nickname,
-      },
-    })
-
-    socketRef.current.on('users', (users) => {
-      setUsers(users)
-    })
-
-    return () => {
-      socketRef.current?.disconnect()
-    }
-  }, [ownState])
-
-  useEffect(() => {
-    if (!ownState || !socketRef.current) return
-    socketRef.current.emit('emotion', { ...ownState })
-  }, [ownState, socketRef])
+  const SOCKET_EVENTS = {
+    USER_ACTION: 'user-action'
+  }
 
   return (
-    <ConnectProviderContext.Provider value={{ ownState, updateOwnState, users }}>
-      {children}
-    </ConnectProviderContext.Provider>
+    <StompClient endpoint={SOCKET_URL} onMessage={console.log}>
+      <ConnectProviderContext.Provider value={{ ownState, updateOwnState, users }}>
+        {children}
+      </ConnectProviderContext.Provider>
+    </StompClient>
   )
 }
+

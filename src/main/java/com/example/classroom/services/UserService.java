@@ -43,7 +43,6 @@ public class UserService {
             return false;
         }
 
-        user.setUserId(UUID.randomUUID());
         serviceHelper.redisson.getMap(usersKey).put(user.getUsername(), user);
         return true;
     }
